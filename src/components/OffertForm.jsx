@@ -121,7 +121,7 @@ const serviceCopy = {
     },
 };
 
-export default function OffertForm({ lang = 'sv', service = 'electrical', endpoint = '/api/offert' }) {
+export default function OffertForm({ lang = 'sv', service = 'electrical', endpoint = '/offert-mail.php' }) {
     const t = translations[lang] || translations.sv;
     const copy = (serviceCopy[lang] || serviceCopy.sv)[service] || (serviceCopy[lang] || serviceCopy.sv).electrical;
     const [step, setStep] = useState(1);

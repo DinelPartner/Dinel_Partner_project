@@ -1,0 +1,120 @@
+---
+export const prerender = false;
+import '../../styles/admin.css';
+import { requireAuth } from '../../lib/session';
+
+if (!requireAuth(Astro.request)) {
+  return Astro.redirect('/');
+}
+---
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Inlägg – Din Elpartner CMS</title>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="brand">Din Elpartner <span>CMS</span></div>
+      <nav style="display:flex; gap:.5rem;">
+        <a href="/admin/edit">+ Nytt inlägg</a>
+        <button id="logout-btn">Logga ut</button>
+      </nav>
+    </div>
+    <div class="wrap">
+      <h1>Alla inlägg</h1>
+      <div class="card">
+        <div id="list-loading">Laddar…</div>
+        <div id="list-error" class="error-text" hidden></div>
+        <div id="post-list"></div>
+      </div>
+    </div>
+
+    <script>
+      const listEl = document.getElementById('post-list');
+      const loadingEl = document.getElementById('list-loading');
+      const errorEl = document.getElementById('list-error');
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+
+      async function loadPosts() {
+        loadingEl.hidden = false;
+        errorEl.hidden = true;
+        listEl.innerHTML = '';
+        try {
+          const res = await fetch('/api/admin/posts', { credentials: 'include' });
+          if (res.status === 401) {
+            window.location.href = '/';
+            return;
+          }
+          if (!res.ok) throw new Error('Kunde inte hämta inlägg');
+          const posts = await res.json();
+          loadingEl.hidden = true;
+          if (posts.length === 0) {
+            listEl.innerHTML = '<p>Inga inlägg ännu.</p>';
+            return;
+          }
+          for (const post of posts) {
+            const row = document.createElement('div');
+            row.className = 'post-row';
+            const title = post.sv ? post.sv.title : post.en ? post.en.title : post.slug;
+            row.innerHTML = `
+              <div>
+                <span class="badge ${post.published ? 'published' : 'draft'}">${post.published ? 'Publicerad' : 'Utkast'}</span>
+                <strong style="margin-left:.5rem;">${escapeHtml(title)}</strong>
+                <div style="font-size:.8rem; color:#697580;">${escapeHtml(post.slug)} · ${escapeHtml(post.date)}</div>
+              </div>
+              <div class="post-actions">
+                <a class="btn btn-secondary" href="/admin/edit?slug=${encodeURIComponent(post.slug)}">Redigera</a>
+                <button class="btn-danger" data-slug="${escapeHtml(post.slug)}" data-title="${escapeHtml(title)}">Ta bort</button>
+              </div>
+            `;
+            listEl.appendChild(row);
+          }
+          listEl.querySelectorAll('button.btn-danger').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+              const slug = btn.getAttribute('data-slug');
+              const title = btn.getAttribute('data-title');
+              if (!confirm(`Ta bort inlägget "${title}"? Detta går inte att ångra.`)) return;
+              btn.disabled = true;
+              btn.textContent = 'Tar bort…';
+              try {
+                const res = await fetch(`/api/admin/posts/${encodeURIComponent(slug)}`, {
+                  method: 'DELETE',
+                  credentials: 'include',
+                });
+                if (!res.ok) {
+                  const data = await res.json().catch(() => ({}));
+                  alert(data.error || 'Kunde inte ta bort inlägget');
+                  btn.disabled = false;
+                  btn.textContent = 'Ta bort';
+                  return;
+                }
+                loadPosts();
+              } catch {
+                alert('Nätverksfel, försök igen.');
+                btn.disabled = false;
+                btn.textContent = 'Ta bort';
+              }
+            });
+          });
+        } catch (err) {
+          loadingEl.hidden = true;
+          errorEl.hidden = false;
+          errorEl.textContent = err instanceof Error ? err.message : 'Okänt fel';
+        }
+      }
+
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+        window.location.href = '/';
+      });
+
+      loadPosts();
+    </script>
+  </body>
+</html>

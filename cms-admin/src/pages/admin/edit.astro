@@ -1,0 +1,249 @@
+---
+export const prerender = false;
+import '../../styles/admin.css';
+import { requireAuth } from '../../lib/session';
+
+if (!requireAuth(Astro.request)) {
+  return Astro.redirect('/');
+}
+---
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Redigera inlägg – Din Elpartner CMS</title>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="brand">Din Elpartner <span>CMS</span></div>
+      <nav style="display:flex; gap:.5rem;">
+        <a href="/admin/">← Alla inlägg</a>
+      </nav>
+    </div>
+    <div class="wrap">
+      <h1 id="page-title">Nytt inlägg</h1>
+      <form id="post-form" class="card">
+        <div class="field">
+          <label for="slug">Slug (del av URL:en, t.ex. "sa-valjer-du-ratt-laddbox")</label>
+          <input type="text" id="slug" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" />
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="date">Datum</label>
+            <input type="date" id="date" name="date" required />
+          </div>
+          <div class="field">
+            <label for="published">Status</label>
+            <select id="published" name="published">
+              <option value="false">Utkast</option>
+              <option value="true">Publicerad</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="image">Bild-URL (eller ladda upp en ny nedan)</label>
+          <input type="text" id="image" name="image" required placeholder="/zdjecia%20na%20strone/bild.jpeg" />
+        </div>
+        <div class="field">
+          <label for="image-upload">Ladda upp ny bild (jpg/png/webp, max 5MB)</label>
+          <input type="file" id="image-upload" accept=".jpg,.jpeg,.png,.webp" />
+          <p id="upload-status" style="font-size:.8rem; color:#697580; margin:.35rem 0 0;"></p>
+        </div>
+
+        <div class="lang-section">
+          <div class="lang-title">Svenska</div>
+          <div class="field">
+            <label for="sv-title">Titel</label>
+            <input type="text" id="sv-title" required />
+          </div>
+          <div class="field">
+            <label for="sv-category">Kategori</label>
+            <input type="text" id="sv-category" required />
+          </div>
+          <div class="field">
+            <label for="sv-excerpt">Ingress</label>
+            <textarea id="sv-excerpt" rows="2" required></textarea>
+          </div>
+          <div class="field">
+            <label for="sv-content">Innehåll (Markdown, stycken separerade med tomrad)</label>
+            <textarea id="sv-content" rows="10" required></textarea>
+          </div>
+        </div>
+
+        <div class="lang-section">
+          <div class="lang-title">English</div>
+          <div class="field">
+            <label for="en-title">Title</label>
+            <input type="text" id="en-title" required />
+          </div>
+          <div class="field">
+            <label for="en-category">Category</label>
+            <input type="text" id="en-category" required />
+          </div>
+          <div class="field">
+            <label for="en-excerpt">Excerpt</label>
+            <textarea id="en-excerpt" rows="2" required></textarea>
+          </div>
+          <div class="field">
+            <label for="en-content">Content (Markdown, blank line between paragraphs)</label>
+            <textarea id="en-content" rows="10" required></textarea>
+          </div>
+        </div>
+
+        <button class="btn" type="submit" id="save-btn">Spara</button>
+        <span id="save-status" style="margin-left:.75rem; font-size:.85rem;"></span>
+        <p class="error-text" id="form-error" hidden></p>
+      </form>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const editSlug = params.get('slug');
+      const isEditMode = !!editSlug;
+
+      const form = document.getElementById('post-form');
+      const slugInput = document.getElementById('slug');
+      const saveBtn = document.getElementById('save-btn');
+      const saveStatus = document.getElementById('save-status');
+      const formError = document.getElementById('form-error');
+      const uploadInput = document.getElementById('image-upload');
+      const uploadStatus = document.getElementById('upload-status');
+      const imageInput = document.getElementById('image');
+
+      if (isEditMode) {
+        document.getElementById('page-title').textContent = 'Redigera inlägg';
+        slugInput.readOnly = true; // renaming a slug = delete + create, not supported inline
+        slugInput.title = 'Slug kan inte ändras efter att inlägget skapats.';
+      }
+
+      function setFieldValues(post) {
+        slugInput.value = post.slug;
+        document.getElementById('date').value = post.date;
+        document.getElementById('published').value = String(post.published);
+        imageInput.value = post.image;
+        document.getElementById('sv-title').value = post.sv.title;
+        document.getElementById('sv-category').value = post.sv.category;
+        document.getElementById('sv-excerpt').value = post.sv.excerpt;
+        document.getElementById('sv-content').value = post.sv.content;
+        document.getElementById('en-title').value = post.en.title;
+        document.getElementById('en-category').value = post.en.category;
+        document.getElementById('en-excerpt').value = post.en.excerpt;
+        document.getElementById('en-content').value = post.en.content;
+      }
+
+      async function loadExisting() {
+        try {
+          const res = await fetch(`/api/admin/posts/${encodeURIComponent(editSlug)}`, { credentials: 'include' });
+          if (res.status === 401) {
+            window.location.href = '/';
+            return;
+          }
+          if (!res.ok) throw new Error('Kunde inte hämta inlägget');
+          const post = await res.json();
+          setFieldValues(post);
+        } catch (err) {
+          formError.hidden = false;
+          formError.textContent = err instanceof Error ? err.message : 'Okänt fel';
+        }
+      }
+
+      if (isEditMode) loadExisting();
+      else document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+
+      uploadInput.addEventListener('change', async () => {
+        const file = uploadInput.files && uploadInput.files[0];
+        if (!file) return;
+        const slug = slugInput.value.trim();
+        if (!slug || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
+          uploadStatus.textContent = 'Ange en giltig slug innan du laddar upp en bild.';
+          uploadStatus.style.color = '#c0392b';
+          uploadInput.value = '';
+          return;
+        }
+        uploadStatus.textContent = 'Laddar upp…';
+        uploadStatus.style.color = '#697580';
+        try {
+          const dataBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+          const res = await fetch('/api/admin/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ slug, filename: file.name, dataBase64 }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Uppladdning misslyckades');
+          imageInput.value = data.path;
+          uploadStatus.textContent = `Uppladdad: ${data.path}`;
+          uploadStatus.style.color = '#1e8449';
+        } catch (err) {
+          uploadStatus.textContent = err instanceof Error ? err.message : 'Uppladdning misslyckades';
+          uploadStatus.style.color = '#c0392b';
+        }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (saveBtn.disabled) return; // guard against double submit
+        saveBtn.disabled = true;
+        saveStatus.textContent = '';
+        saveStatus.innerHTML = '<span class="spinner"></span> Sparar…';
+        formError.hidden = true;
+
+        const payload = {
+          slug: slugInput.value.trim(),
+          date: document.getElementById('date').value,
+          image: imageInput.value.trim(),
+          published: document.getElementById('published').value === 'true',
+          sv: {
+            title: document.getElementById('sv-title').value.trim(),
+            category: document.getElementById('sv-category').value.trim(),
+            excerpt: document.getElementById('sv-excerpt').value.trim(),
+            content: document.getElementById('sv-content').value.trim(),
+          },
+          en: {
+            title: document.getElementById('en-title').value.trim(),
+            category: document.getElementById('en-category').value.trim(),
+            excerpt: document.getElementById('en-excerpt').value.trim(),
+            content: document.getElementById('en-content').value.trim(),
+          },
+        };
+
+        try {
+          const url = isEditMode ? `/api/admin/posts/${encodeURIComponent(editSlug)}` : '/api/admin/posts';
+          const method = isEditMode ? 'PUT' : 'POST';
+          const res = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.status === 401) {
+            window.location.href = '/';
+            return;
+          }
+          if (!res.ok) throw new Error(data.error || 'Kunde inte spara inlägget');
+
+          saveStatus.textContent = 'Sparat!';
+          setTimeout(() => {
+            window.location.href = '/admin/';
+          }, 700);
+        } catch (err) {
+          saveStatus.textContent = '';
+          formError.hidden = false;
+          formError.textContent = err instanceof Error ? err.message : 'Okänt fel';
+          saveBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

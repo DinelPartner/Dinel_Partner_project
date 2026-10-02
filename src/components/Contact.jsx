@@ -36,7 +36,7 @@ export default function Contact({ title, labels, contactInfo, lang = 'sv' }) {
         setStatus('loading');
 
         try {
-            const response = await fetch('/api/kontakt', {
+            const response = await fetch('/kontakt.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

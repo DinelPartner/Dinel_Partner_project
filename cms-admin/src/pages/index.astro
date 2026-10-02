@@ -1,0 +1,70 @@
+---
+export const prerender = false;
+import '../styles/admin.css';
+import { requireAuth } from '../lib/session';
+
+if (requireAuth(Astro.request)) {
+  return Astro.redirect('/admin/');
+}
+---
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Logga in – Din Elpartner CMS</title>
+  </head>
+  <body>
+    <div class="login-shell">
+      <div class="login-card">
+        <h1>Din Elpartner <span class="brand-dot">CMS</span></h1>
+        <form id="login-form">
+          <div class="field">
+            <label for="password">Lösenord</label>
+            <input type="password" id="password" name="password" required autofocus />
+          </div>
+          <button class="btn" type="submit" id="submit-btn" style="width:100%;">Logga in</button>
+          <p class="error-text" id="error-msg" hidden></p>
+        </form>
+      </div>
+    </div>
+    <script>
+      const form = document.getElementById('login-form');
+      const btn = document.getElementById('submit-btn');
+      const errorMsg = document.getElementById('error-msg');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (btn.disabled) return; // guard against double submit
+        btn.disabled = true;
+        const originalLabel = btn.textContent;
+        btn.textContent = 'Loggar in…';
+        errorMsg.hidden = true;
+
+        const password = document.getElementById('password').value;
+        try {
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ password }),
+          });
+          if (res.ok) {
+            window.location.href = '/admin/';
+            return;
+          }
+          const data = await res.json().catch(() => ({}));
+          errorMsg.textContent = data.error || 'Felaktigt lösenord';
+          errorMsg.hidden = false;
+        } catch {
+          errorMsg.textContent = 'Nätverksfel, försök igen.';
+          errorMsg.hidden = false;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = originalLabel;
+        }
+      });
+    </script>
+  </body>
+</html>

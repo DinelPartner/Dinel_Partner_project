@@ -1,0 +1,36 @@
+# Włączenie silnika przepisywania URL (Apache Mod_Rewrite)
+RewriteEngine On
+RewriteBase /
+
+# Niestandardowa strona 404
+ErrorDocument 404 /404.html
+
+# Legacy redirects (old URL structure -> current pages)
+RewriteRule ^offert/?$ /begar-offert-el-installation [R=301,L]
+RewriteRule ^offert-klimat/?$ /begar-offert-luft-luft-varmepump [R=301,L]
+RewriteRule ^sv/aktualnosci/?$ /sv/aktuellt [R=301,L]
+RewriteRule ^sv/aktualnosci/([a-z0-9-]+)/?$ /sv/aktuellt/$1 [R=301,L]
+RewriteRule ^en/news/?$ /en/aktuellt [R=301,L]
+RewriteRule ^en/news/([a-z0-9-]+)/?$ /en/aktuellt/$1 [R=301,L]
+
+# Blog article rewrite: clean URLs -> PHP template that proxies the cms-admin panel's public API
+RewriteRule ^sv/aktuellt/([a-z0-9-]+)/?$ /aktuellt-artikel.php?slug=$1&lang=sv [L,QSA]
+RewriteRule ^en/aktuellt/([a-z0-9-]+)/?$ /aktuellt-artikel.php?slug=$1&lang=en [L,QSA]
+
+# Zachowaj istniejące pliki i katalogi
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 1. Automatyczne przekierowanie adresów bez ukośnika (np. /offert-klimat na /offert-klimat/)
+RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+RewriteRule ^(.*[^/])$ /$1/ [R=301,L]
+
+# 2. Serwowanie index.html z podkatalogów dla czystych adresów URL
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.*)$ $1/index.html [L]
+
+# 3. Wsparcie dla przyjaznych adresów z rozszerzeniem .html (opcjonalne)
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]

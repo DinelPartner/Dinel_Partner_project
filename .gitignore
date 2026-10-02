@@ -15,5 +15,11 @@ dist/
 .DS_Store
 *.log
 
-# Old deployment artifacts (one.com era zips, no longer relevant on Vercel)
+# Deployment artifacts (dist/ is zipped up manually for one.com upload)
 *.zip
+
+# cms-admin is a separate Vercel app with its own install/build/.env
+cms-admin/node_modules/
+cms-admin/.vercel/
+cms-admin/dist/
+cms-admin/.env

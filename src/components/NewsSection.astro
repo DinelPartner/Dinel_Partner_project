@@ -1,6 +1,4 @@
 ---
-import { getCollection } from "astro:content";
-
 interface Props {
     lang?: "sv" | "en";
     fullPage?: boolean;
@@ -9,23 +7,23 @@ interface Props {
 
 const { lang = "sv", fullPage = false, limit }: Props = Astro.props;
 const copy = lang === "en"
-    ? { kicker: "LATEST NEWS", title: "Advice and news", subtitle: "Practical insights from our team — on installations, EV charging and a safer home.", link: "See all news", back: "Back to home", readMore: "Read more", empty: "No posts published right now. Check back soon!" }
-    : { kicker: "AKTUELLT", title: "Senaste nytt", subtitle: "Praktiska tips och nyheter från oss — om elinstallationer, laddboxar och ett tryggare hem.", link: "Till alla artiklar", back: "Tillbaka till startsidan", readMore: "Läs mer", empty: "Inga inlägg publicerade just nu. Kom tillbaka snart!" };
+    ? { kicker: "LATEST NEWS", title: "Advice and news", subtitle: "Practical insights from our team — on installations, EV charging and a safer home.", link: "See all news", back: "Back to home", readMore: "Read more", empty: "No posts published right now. Check back soon!", loading: "Loading…", error: "Could not load posts right now. Please try again later." }
+    : { kicker: "AKTUELLT", title: "Senaste nytt", subtitle: "Praktiska tips och nyheter från oss — om elinstallationer, laddboxar och ett tryggare hem.", link: "Till alla artiklar", back: "Tillbaka till startsidan", readMore: "Läs mer", empty: "Inga inlägg publicerade just nu. Kom tillbaka snart!", loading: "Laddar…", error: "Kunde inte hämta inlägg just nu. Försök igen senare." };
 const HeadingTag = fullPage ? "h1" : "h2";
-
-const formatDate = (date: Date) => {
-    const locale = lang === "en" ? "en-GB" : "sv-SE";
-    return new Intl.DateTimeFormat(locale, { year: "numeric", month: "long", day: "numeric" }).format(date);
-};
-
-const allPosts = await getCollection("blog", (entry) => entry.id.startsWith(`${lang}/`) && entry.data.published);
-allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const posts = typeof limit === "number" ? allPosts.slice(0, limit) : allPosts;
-
-const slugOf = (id: string) => id.split("/").slice(1).join("/").replace(/\.md$/, "");
 ---
 
-<section class:list={["news-section", { "news-page": fullPage }]} id={!fullPage ? "aktuellt" : undefined}>
+<!--
+  Content is fetched client-side, directly from the cms-admin panel's public,
+  CORS-restricted API (GET /api/posts) — not proxied through a one.com PHP
+  script. This is a deliberate choice (see repo root README / project
+  report): a browser-side CORS fetch doesn't depend on one.com's server
+  capabilities at all, only on the Vercel API's CORS headers (which are
+  scoped to this exact domain), so adding a local PHP list-proxy here would
+  just be an extra hop with no benefit. The single-article page
+  (aktuellt-artikel.php) *does* proxy server-side, because it needs the data
+  at render time for SEO meta tags — a card grid like this one doesn't.
+-->
+<section class:list={["news-section", { "news-page": fullPage }]} id={!fullPage ? "aktuellt" : undefined} data-lang={lang} data-limit={limit ?? ""}>
     <div class="container mx-auto px-5 md:px-8">
         <div class="section-heading-row reveal">
             <div>
@@ -36,26 +34,8 @@ const slugOf = (id: string) => id.split("/").slice(1).join("/").replace(/\.md$/,
             {!fullPage && <a class="section-link" href={`/${lang}/aktuellt/`}>{copy.link} <span>→</span></a>}
             {fullPage && <a class="section-link" href={`/${lang}/`}>← {copy.back}</a>}
         </div>
-        <div class="news-grid reveal-stagger">
-            {posts.length === 0 && <p class="news-empty">{copy.empty}</p>}
-            {posts.map((post) => {
-                const slug = slugOf(post.id);
-                const postUrl = `/${lang}/aktuellt/${slug}/`;
-                const readMoreAria = lang === "en" ? `Read more about ${post.data.title}` : `Läs mer om ${post.data.title}`;
-                return (
-                    <article class="news-card">
-                        <a href={postUrl} class="news-image-link">
-                            <img src={post.data.image} alt={post.data.title} loading="lazy" />
-                        </a>
-                        <div class="news-card-body">
-                            <div class="news-meta"><span>{post.data.category}</span><time>{formatDate(post.data.date)}</time></div>
-                            <h3><a href={postUrl}>{post.data.title}</a></h3>
-                            <p>{post.data.excerpt}</p>
-                            <a class="news-read" href={postUrl} aria-label={readMoreAria}>{copy.readMore} <span>→</span></a>
-                        </div>
-                    </article>
-                );
-            })}
+        <div class="news-grid reveal-stagger" data-news-grid>
+            <p class="news-empty" data-news-loading>{copy.loading}</p>
         </div>
     </div>
 </section>
@@ -67,3 +47,67 @@ const slugOf = (id: string) => id.split("/").slice(1).join("/").replace(/\.md$/,
         padding: 1rem 0;
     }
 </style>
+
+<script>
+    // PLACEHOLDER: replace with the real deployed cms-admin Vercel URL once
+    // the client deploys it (see repo root README + project report §12/§14).
+    const CMS_API_BASE = "https://PLACEHOLDER-cms-admin.vercel.app";
+
+    function formatDate(dateStr: string, lang: string): string {
+        const d = new Date(dateStr);
+        const locale = lang === "en" ? "en-GB" : "sv-SE";
+        return new Intl.DateTimeFormat(locale, { year: "numeric", month: "long", day: "numeric" }).format(d);
+    }
+
+    async function initNewsSection(section: Element) {
+        const lang = section.getAttribute("data-lang") || "sv";
+        const limitAttr = section.getAttribute("data-limit");
+        const limit = limitAttr ? parseInt(limitAttr, 10) : undefined;
+        const grid = section.querySelector("[data-news-grid]") as HTMLElement;
+        const copy = lang === "en"
+            ? { readMore: "Read more", empty: "No posts published right now. Check back soon!", error: "Could not load posts right now. Please try again later." }
+            : { readMore: "Läs mer", empty: "Inga inlägg publicerade just nu. Kom tillbaka snart!", error: "Kunde inte hämta inlägg just nu. Försök igen senare." };
+
+        try {
+            const res = await fetch(`${CMS_API_BASE}/api/posts`);
+            if (!res.ok) throw new Error("bad status");
+            let posts: { slug: string; title: string; category: string; excerpt: string; date: string; image: string }[] = await res.json();
+
+            posts.sort((a, b) => (a.date < b.date ? 1 : -1));
+            if (typeof limit === "number") posts = posts.slice(0, limit);
+
+            if (posts.length === 0) {
+                grid.innerHTML = `<p class="news-empty">${copy.empty}</p>`;
+                return;
+            }
+
+            grid.innerHTML = posts
+                .map((post) => {
+                    const postUrl = `/${lang}/aktuellt/${post.slug}/`;
+                    const readMoreAria = lang === "en" ? `Read more about ${post.title}` : `Läs mer om ${post.title}`;
+                    return `
+                        <article class="news-card">
+                            <a href="${postUrl}" class="news-image-link">
+                                <img src="${post.image}" alt="${escapeHtml(post.title)}" loading="lazy" />
+                            </a>
+                            <div class="news-card-body">
+                                <div class="news-meta"><span>${escapeHtml(post.category)}</span><time>${formatDate(post.date, lang)}</time></div>
+                                <h3><a href="${postUrl}">${escapeHtml(post.title)}</a></h3>
+                                <p>${escapeHtml(post.excerpt)}</p>
+                                <a class="news-read" href="${postUrl}" aria-label="${escapeHtml(readMoreAria)}">${copy.readMore} <span>→</span></a>
+                            </div>
+                        </article>
+                    `;
+                })
+                .join("");
+        } catch {
+            grid.innerHTML = `<p class="news-empty">${copy.error}</p>`;
+        }
+    }
+
+    function escapeHtml(str: string): string {
+        return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as Record<string, string>)[c]);
+    }
+
+    document.querySelectorAll(".news-section").forEach((section) => initNewsSection(section));
+</script>

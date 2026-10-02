@@ -1,0 +1,49 @@
+---
+// "Referensjobb" / "Utvalda projekt" — real installation photo gallery.
+interface ReferenceItem { title: string; description: string; image: string; }
+interface Props { title: string; steps: ReferenceItem[]; lang?: "sv" | "en"; }
+const { title, steps, lang = "sv" } = Astro.props;
+const copy = lang === "en"
+    ? { kicker: "FEATURED PROJECTS", seeMore: "See more projects", prev: "Previous", next: "Next" }
+    : { kicker: "REFERENSJOBB", seeMore: "Se fler referensjobb", prev: "Föregående", next: "Nästa" };
+---
+
+<section id="referenser" class="section reference-section">
+    <div class="container mx-auto px-5 md:px-8">
+        <div class="section-heading-row reveal">
+            <div><div class="section-kicker"><span></span>{copy.kicker}</div><h2>{title}</h2></div>
+            <div class="flex items-center gap-6">
+                <a href="#kontakt" class="section-link">{copy.seeMore} <span>→</span></a>
+                <div class="reference-nav-row">
+                    <button class="reference-nav" data-ref-prev aria-label={copy.prev}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+                    <button class="reference-nav" data-ref-next aria-label={copy.next}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+                </div>
+            </div>
+        </div>
+        <div class="reference-scroller reveal-stagger" data-ref-scroller>
+            {steps.map((item) => (
+                <article class="reference-card">
+                    <div class="reference-card-media"><img src={item.image} alt={item.title} loading="lazy" /></div>
+                    <div class="reference-card-body">
+                        <h3>{item.title}</h3>
+                        <span class="reference-nav" aria-hidden="true" style="width:1.9rem;height:1.9rem;">→</span>
+                    </div>
+                </article>
+            ))}
+        </div>
+    </div>
+</section>
+
+<script>
+    const scroller = document.querySelector('[data-ref-scroller]');
+    const prev = document.querySelector('[data-ref-prev]');
+    const next = document.querySelector('[data-ref-next]');
+    const scrollByCard = (dir: number) => {
+        if (!scroller) return;
+        const card = scroller.querySelector('.reference-card');
+        const amount = card ? card.getBoundingClientRect().width + 18 : 300;
+        scroller.scrollBy({ left: dir * amount, behavior: 'smooth' });
+    };
+    prev?.addEventListener('click', () => scrollByCard(-1));
+    next?.addEventListener('click', () => scrollByCard(1));
+</script>

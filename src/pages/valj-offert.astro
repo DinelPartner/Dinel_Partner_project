@@ -1,0 +1,55 @@
+---
+export const prerender = true;
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const PHOTOS = "/zdjecia%20na%20strone";
+
+const options = [
+    {
+        href: "/begar-offert-el-installation",
+        image: `${PHOTOS}/de98d52b-a8ae-48a7-9a66-0617c895dc51.jpeg`,
+        title: "Elinstallation",
+        text: "Nyinstallation, ombyggnation, byte av elcentral, laddbox eller allmän elservice.",
+        cta: "Få offert på elinstallation",
+    },
+    {
+        href: "/begar-offert-luft-luft-varmepump",
+        image: `${PHOTOS}/d1c0dbd9-3d43-4ef8-9e45-14c41276367b.jpeg`,
+        title: "Klimatanläggning & värmepump",
+        text: "Installation, service eller reparation av luft-luft- och luft-vattenvärmepumpar.",
+        cta: "Få offert på klimatanläggning",
+    },
+];
+---
+
+<BaseLayout
+    title="Välj offerttyp – Din Elpartner"
+    description="Välj om du vill ha offert på elinstallation eller klimatanläggning/värmepump, så tar vi dig till rätt formulär."
+    lang="sv"
+    hideCTA={true}
+>
+    <section class="offert-picker">
+        <div class="container mx-auto px-5 md:px-8">
+            <div class="section-kicker"><span></span>OFFERT</div>
+            <h1 class="offert-picker-title">Vad behöver du hjälp med?</h1>
+            <p class="offert-picker-subtitle">
+                Välj kategori nedan så kommer du direkt till rätt formulär – vi återkommer med en kostnadsfri offert.
+            </p>
+
+            <div class="offert-picker-grid">
+                {options.map((option) => (
+                    <a href={option.href} class="offert-picker-card">
+                        <div class="offert-picker-image">
+                            <img src={option.image} alt="" loading="eager" />
+                        </div>
+                        <div class="offert-picker-body">
+                            <h2>{option.title}</h2>
+                            <p>{option.text}</p>
+                            <span class="offert-picker-link">{option.cta} <span>→</span></span>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </section>
+</BaseLayout>

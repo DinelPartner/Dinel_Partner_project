@@ -1,0 +1,69 @@
+---
+import { getCollection } from "astro:content";
+
+interface Props {
+    lang?: "sv" | "en";
+    fullPage?: boolean;
+    limit?: number;
+}
+
+const { lang = "sv", fullPage = false, limit }: Props = Astro.props;
+const copy = lang === "en"
+    ? { kicker: "LATEST NEWS", title: "Advice and news", subtitle: "Practical insights from our team — on installations, EV charging and a safer home.", link: "See all news", back: "Back to home", readMore: "Read more", empty: "No posts published right now. Check back soon!" }
+    : { kicker: "AKTUELLT", title: "Senaste nytt", subtitle: "Praktiska tips och nyheter från oss — om elinstallationer, laddboxar och ett tryggare hem.", link: "Till alla artiklar", back: "Tillbaka till startsidan", readMore: "Läs mer", empty: "Inga inlägg publicerade just nu. Kom tillbaka snart!" };
+const HeadingTag = fullPage ? "h1" : "h2";
+
+const formatDate = (date: Date) => {
+    const locale = lang === "en" ? "en-GB" : "sv-SE";
+    return new Intl.DateTimeFormat(locale, { year: "numeric", month: "long", day: "numeric" }).format(date);
+};
+
+const allPosts = await getCollection("blog", (entry) => entry.id.startsWith(`${lang}/`) && entry.data.published);
+allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const posts = typeof limit === "number" ? allPosts.slice(0, limit) : allPosts;
+
+const slugOf = (id: string) => id.split("/").slice(1).join("/").replace(/\.md$/, "");
+---
+
+<section class:list={["news-section", { "news-page": fullPage }]} id={!fullPage ? "aktuellt" : undefined}>
+    <div class="container mx-auto px-5 md:px-8">
+        <div class="section-heading-row reveal">
+            <div>
+                <div class="section-kicker"><span></span>{copy.kicker}</div>
+                <HeadingTag>{copy.title}</HeadingTag>
+                {!fullPage && <p>{copy.subtitle}</p>}
+            </div>
+            {!fullPage && <a class="section-link" href={`/${lang}/aktuellt/`}>{copy.link} <span>→</span></a>}
+            {fullPage && <a class="section-link" href={`/${lang}/`}>← {copy.back}</a>}
+        </div>
+        <div class="news-grid reveal-stagger">
+            {posts.length === 0 && <p class="news-empty">{copy.empty}</p>}
+            {posts.map((post) => {
+                const slug = slugOf(post.id);
+                const postUrl = `/${lang}/aktuellt/${slug}/`;
+                const readMoreAria = lang === "en" ? `Read more about ${post.data.title}` : `Läs mer om ${post.data.title}`;
+                return (
+                    <article class="news-card">
+                        <a href={postUrl} class="news-image-link">
+                            <img src={post.data.image} alt={post.data.title} loading="lazy" />
+                        </a>
+                        <div class="news-card-body">
+                            <div class="news-meta"><span>{post.data.category}</span><time>{formatDate(post.data.date)}</time></div>
+                            <h3><a href={postUrl}>{post.data.title}</a></h3>
+                            <p>{post.data.excerpt}</p>
+                            <a class="news-read" href={postUrl} aria-label={readMoreAria}>{copy.readMore} <span>→</span></a>
+                        </div>
+                    </article>
+                );
+            })}
+        </div>
+    </div>
+</section>
+
+<style>
+    .news-empty {
+        color: #697580;
+        font-size: .95rem;
+        padding: 1rem 0;
+    }
+</style>

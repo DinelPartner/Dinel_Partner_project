@@ -1,0 +1,30 @@
+---
+export const prerender = true;
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+    title="404 – Sidan kunde inte hittas | Din Elpartner"
+    description="Sidan du sökte finns inte längre eller har flyttats."
+    lang="sv"
+>
+    <section class="section" style="min-height: 60vh; display: flex; align-items: center; padding-top: 9rem;">
+        <div class="container mx-auto px-5 md:px-8 text-center" style="max-width: 640px;">
+            <div class="section-kicker" style="justify-content: center; margin-bottom: 1.2rem;">
+                <span></span>404
+            </div>
+            <h1 style="color: var(--ink); font-size: clamp(1.9rem, 4vw, 2.8rem); letter-spacing: -.03em; margin-bottom: 1rem;">
+                Oj, vi kunde inte hitta den sidan
+            </h1>
+            <p style="color: #5b6772; font-size: 1.05rem; line-height: 1.7; margin-bottom: 2.5rem;">
+                Sidan du försökte nå finns inte längre, har flyttats eller så skrevs
+                adressen fel. Prova att gå till startsidan, eller hör av dig till oss
+                om du inte hittar det du letar efter.
+            </p>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <a href="/sv/" class="button button-primary">Till startsidan <span>→</span></a>
+                <a href="/sv/#kontakt" class="button button-secondary">Kontakta oss</a>
+            </div>
+        </div>
+    </section>
+</BaseLayout>

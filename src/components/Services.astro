@@ -1,0 +1,43 @@
+---
+interface ServiceItem { title: string; description: string; image: string; }
+interface Props { title: string; subtitle: string; items: ServiceItem[]; lang?: "sv" | "en"; }
+const { title, subtitle, items, lang = "sv" } = Astro.props;
+const copy = lang === "en"
+    ? { kicker: "OUR SERVICES", seeAll: "See all services", readMore: "Read more", readMoreAria: (t: string) => `Read more about ${t}` }
+    : { kicker: "VÅRA TJÄNSTER", seeAll: "Se alla tjänster", readMore: "Läs mer", readMoreAria: (t: string) => `Läs mer om ${t}` };
+
+// Inline SVG markup per card, in item order (Laddbox, Elcentral, Elinstallationer, Service, Individuell offert)
+const icons: string[] = [
+    '<path d="M13 2 4 13h6l-1 9 9-12h-6l1-8Z" />',
+    '<rect x="5" y="4" width="14" height="17" rx="1" /><path d="M9 8h6M9 12h6M9 16h3" />',
+    '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.46 1.1 1.2 1.1 2.2h5a2.7 2.7 0 0 1 1.1-2.2A6 6 0 0 0 12 3Z" />',
+    '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.3 2.3-2-2 2.3-2.3Z" />',
+    '<rect x="4" y="3" width="16" height="18" rx="1" /><path d="M8 7h8M8 11h8M8 15h3M14 15h2" />',
+];
+---
+
+<section id="tjanster" class="section section-soft">
+    <div class="container mx-auto px-5 md:px-8">
+        <div class="section-heading-row reveal">
+            <div><div class="section-kicker"><span></span>{copy.kicker}</div><h2>{title}</h2><p>{subtitle}</p></div>
+            <a href={`/${lang}/#referenser`} class="section-link">{copy.seeAll} <span>→</span></a>
+        </div>
+        <div class="service-grid reveal-stagger">
+            {items.map((item, index) => (
+                <article class="service-card">
+                    <div class="service-card-media">
+                        <img src={item.image} alt={item.title} loading="lazy" />
+                        <div class="service-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" set:html={icons[index]} />
+                        </div>
+                    </div>
+                    <div class="service-card-body">
+                        <h3>{item.title}</h3>
+                        <p>{item.description}</p>
+                        <a href="#kontakt" class="card-arrow-link" aria-label={copy.readMoreAria(item.title)}>{copy.readMore} <span>→</span></a>
+                    </div>
+                </article>
+            ))}
+        </div>
+    </div>
+</section>

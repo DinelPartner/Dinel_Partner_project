@@ -1,0 +1,73 @@
+---
+// "Varför välja Din Elpartner?" — 4 USP items with gold icons.
+interface Props { title: string; content: string; lang?: "sv" | "en"; }
+const { title, content, lang = "sv" } = Astro.props;
+
+const reasonsByLang = {
+    sv: [
+        {
+            title: "Trygga installationer",
+            text: "Vi levererar pålitliga och professionella installationer som håller över tid.",
+            icon: '<path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3Z" /><path d="m9 12 2 2 4-4" />',
+        },
+        {
+            title: "Snabb återkoppling",
+            text: "Du får alltid snabb respons och tydlig kommunikation genom hela projektet.",
+            icon: '<circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" />',
+        },
+        {
+            title: "Erfaren montagepersonal",
+            text: "Vår elektriker har lång erfarenhet och rätt kompetens för ett tryggt resultat.",
+            icon: '<circle cx="12" cy="8" r="3" /><path d="M5 21c1-4 4-6 7-6s6 2 7 6" />',
+        },
+        {
+            title: "Lokal närvaro",
+            text: "Vi finns här för privatpersoner, företag och BRF:er i hela Stockholm.",
+            icon: '<path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z" /><circle cx="12" cy="10" r="2.5" />',
+        },
+    ],
+    en: [
+        {
+            title: "Safe installations",
+            text: "We deliver reliable, professional installations built to last.",
+            icon: '<path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3Z" /><path d="m9 12 2 2 4-4" />',
+        },
+        {
+            title: "Fast response",
+            text: "You always get a quick response and clear communication throughout the project.",
+            icon: '<circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" />',
+        },
+        {
+            title: "Experienced installers",
+            text: "Our electricians have long experience and the right expertise for a safe result.",
+            icon: '<circle cx="12" cy="8" r="3" /><path d="M5 21c1-4 4-6 7-6s6 2 7 6" />',
+        },
+        {
+            title: "Local presence",
+            text: "We are here for private individuals, businesses and housing associations across Stockholm.",
+            icon: '<path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z" /><circle cx="12" cy="10" r="2.5" />',
+        },
+    ],
+};
+const reasons = reasonsByLang[lang] || reasonsByLang.sv;
+const kicker = lang === "en" ? "WHY CHOOSE US?" : "VARFÖR VÄLJA OSS?";
+---
+
+<section id="om-oss" class="section why-section">
+    <div class="container mx-auto px-5 md:px-8">
+        <div class="section-heading-row reveal">
+            <div><div class="section-kicker"><span></span>{kicker}</div><h2>{title}</h2><p class="max-w-2xl">{content}</p></div>
+        </div>
+        <div class="why-grid reveal-stagger">
+            {reasons.map((reason) => (
+                <div class="why-item">
+                    <div class="why-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={reason.icon} />
+                    </div>
+                    <h3>{reason.title}</h3>
+                    <p>{reason.text}</p>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>

@@ -1,0 +1,74 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.astro";
+import StickyCTA from "../components/StickyCTA.jsx";
+import CookieConsent from "../components/CookieConsent.jsx";
+
+interface Props {
+	title: string;
+	description?: string;
+	lang?: "sv" | "en";
+	simpleHeader?: boolean;
+	hideCTA?: boolean;
+}
+
+const {
+	title,
+	description = "Din elektriker i Stockholm",
+	lang = "sv",
+	simpleHeader = false,
+	hideCTA = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang} class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+		<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body
+		class="bg-white text-gray-900 selection:bg-accent selection:text-white"
+	>
+		<a href="#main-content" class="skip-link">
+			{lang === "en" ? "Skip to main content" : "Hoppa till innehållet"}
+		</a>
+		<Header client:load lang={lang} simpleMode={simpleHeader} />
+		<main id="main-content" class="relative z-10">
+			<slot />
+		</main>
+		{!hideCTA && <StickyCTA client:idle lang={lang} />}
+		<Footer lang={lang} />
+		<CookieConsent client:idle lang={lang} />
+		<script>
+			// Site-wide scroll-reveal: fades/slides in `.reveal` and `.reveal-stagger`
+			// blocks as they enter the viewport. No-ops harmlessly if the browser
+			// lacks IntersectionObserver; prefers-reduced-motion is handled in CSS.
+			if ('IntersectionObserver' in window) {
+				const targets = document.querySelectorAll('.reveal, .reveal-stagger');
+				const observer = new IntersectionObserver(
+					(entries) => {
+						entries.forEach((entry) => {
+							if (entry.isIntersecting) {
+								entry.target.classList.add('is-visible');
+								observer.unobserve(entry.target);
+							}
+						});
+					},
+					{ threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+				);
+				targets.forEach((el) => observer.observe(el));
+			} else {
+				document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => el.classList.add('is-visible'));
+			}
+		</script>
+	</body>
+</html>

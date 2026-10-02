@@ -1,0 +1,173 @@
+---
+export const prerender = true;
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Hero from "../../components/Hero.astro";
+import About from "../../components/About.astro";
+import Services from "../../components/Services.astro";
+import Process from "../../components/Process.astro";
+import Arbetsprocess from "../../components/Arbetsprocess.astro";
+import Contact from "../../components/Contact.jsx";
+import NewsSection from "../../components/NewsSection.astro";
+
+const PHOTOS = "/zdjecia%20na%20strone";
+const HERO_PHOTOS = "/zdjecia_hero";
+const SERVICE_PHOTOS = "/zdjecia_2_sekcja";
+
+const content = {
+    hero: {
+        eyebrow: "Your local electrician in Stockholm",
+        title: "Safe electrical installations for homes, businesses & housing associations",
+        subtitle:
+            "From minor electrical jobs to complete installations – we help you with modern, safe and energy-efficient solutions. Fast response, professional execution and an electrician you can trust.",
+        ctaPrimary: "Request a quote",
+        ctaPrimaryHref: "/en/choose-quote",
+        ctaSecondary: "Our services",
+        usps: ["Safe installations", "High quality", "Experienced electricians and personal service"],
+        images: [
+            { src: `${HERO_PHOTOS}/att.2jxTUev92Z-7DB6c7AKDRiM0tyrDwV6wKoIwu2JEJsQ.JPG`, alt: "Electrician installing an EV charger outdoors" },
+            { src: `${HERO_PHOTOS}/att.WVlwlVTL30SS7jUPocEGf3uh-EGNgJrOJgP0uK0fhtk.JPG`, alt: "Newly installed air-to-air heat pump on a facade" },
+            { src: `${HERO_PHOTOS}/att.cseothlXYtyuzHPs4_YS2i6ZzFn19C7Z-Qiy1vl5tps.JPG`, alt: "Modern house with a newly built deck" },
+            { src: `${HERO_PHOTOS}/att.jsijWmOtu6cM6m3kHrD4jSUNHrMkxFouI7fJqQ8lkJE.JPG`, alt: "Electrical installation in a ceiling during construction" },
+            { src: `${HERO_PHOTOS}/att.wcCqvbp6pbTZypn7uMqcH1-rN1QIXHD_42PmuDlIPpU.JPG`, alt: "Finished lighting installation in a dining area" },
+        ],
+    },
+    services: {
+        title: "Our services",
+        subtitle:
+            "We deliver complete solutions for both private individuals and businesses.",
+        items: [
+            {
+                title: "EV charger",
+                description:
+                    "Installation of EV chargers for houses, businesses and housing associations. Ready for the future.",
+                image: `${SERVICE_PHOTOS}/laddbox-el-bil.jpeg`,
+            },
+            {
+                title: "Panel replacement",
+                description:
+                    "Installation and replacement of electrical panels. Modern, safe and future-proof.",
+                image: `${SERVICE_PHOTOS}/byte-av-elcentral.jpeg`,
+            },
+            {
+                title: "Electrical installations",
+                description:
+                    "Everything from new installations to renovations. Safe and modern electrical systems.",
+                image: `${SERVICE_PHOTOS}/el-installation.jpeg`,
+            },
+            {
+                title: "Service & troubleshooting",
+                description:
+                    "Fast help with problems and ongoing service for safe, reliable operation.",
+                image: `${SERVICE_PHOTOS}/felsokning.jpeg`,
+            },
+            {
+                title: "Air heat pump installation",
+                description:
+                    "Installation of an air-to-air heat pump for efficient, comfortable heating all year round.",
+                image: `${SERVICE_PHOTOS}/luftvarmepump-med-installation.jpeg`,
+            },
+        ],
+    },
+    reference: {
+        title: "Featured projects",
+        items: [
+            {
+                title: "Heat pump installation",
+                description: "Air-to-air heat pump installed with precision and quality.",
+                image: `${PHOTOS}/d1c0dbd9-3d43-4ef8-9e45-14c41276367b.jpeg`,
+            },
+            {
+                title: "Heat pump commissioning",
+                description: "Professional assembly and commissioning of a heat pump.",
+                image: `${PHOTOS}/752dc9dd-e0e4-4384-b013-b96d5f668d64.jpeg`,
+            },
+            {
+                title: "Panel replacement",
+                description: "A modern panel for greater safety and capacity.",
+                image: `${PHOTOS}/02d60a24-f2da-49a3-b1eb-55f7643b584b.jpeg`,
+            },
+            {
+                title: "Business installation",
+                description: "Electrical installation for a business with multiple sites.",
+                image: `${PHOTOS}/d4520a4b-953f-4332-8da9-8e1dfc1596ce.jpeg`,
+            },
+        ],
+    },
+    process: {
+        title: "Our process",
+        steps: [
+            { number: "01", title: "Contact", description: "Send an inquiry through the form or call us directly for a first chat." },
+            { number: "02", title: "Consultation", description: "We review your needs and conditions to find the best solution." },
+            { number: "03", title: "Installation", description: "The work is carried out by our licensed electricians per industry rules." },
+            { number: "04", title: "Done!", description: "A walkthrough of the installation, function check and handover of documentation." },
+        ],
+    },
+    about: {
+        title: "A reliable partner throughout the project",
+        content:
+            "Safety and quality are the foundation of everything we do. With a licensed installer and solid professional knowledge, we ensure electrical installations that work today and are adapted to future demands.",
+    },
+    cta: {
+        kicker: "CONSULTATION · QUOTE · INSTALLATION · SERVICE",
+        title: "Need help with electricity or a heat pump?",
+        text: "Contact us for a free quote – we help you from idea to finished installation.",
+        image: `${PHOTOS}/65dba9e2-19e9-46d7-9a7a-50ab853c9f1b.jpeg`,
+    },
+    contact: {
+        title: "Contact us",
+        info: {
+            name: "Peter Palka",
+            email: "info@dinelpartner.se",
+            phone: "+46 70 023 54 36",
+        },
+        labels: {
+            contactPerson: "Project manager",
+            name: "Name",
+            email: "Email",
+            phone: "Phone number",
+            message: "Tell us what you need help with...",
+            consent:
+                "I agree that my information is stored according to the privacy policy.",
+            submit: "Send request",
+            loading: "Sending...",
+            successTitle: "Thank you for your request!",
+            successMessage:
+                "We have received your message and will get back to you as soon as possible.",
+            sendAnother: "Send another message",
+            optional: "Optional",
+        },
+    },
+};
+---
+
+<BaseLayout
+    title="Din Elpartner – Electrician Stockholm & EV Chargers"
+    description={content.hero.subtitle}
+    lang="en"
+>
+    <Hero {...content.hero} />
+    <Services
+        title={content.services.title}
+        subtitle={content.services.subtitle}
+        items={content.services.items}
+        lang="en"
+    />
+    <Process title={content.reference.title} steps={content.reference.items} lang="en" />
+    <NewsSection lang="en" limit={3} />
+    <About title={content.about.title} content={content.about.content} lang="en" />
+    <Arbetsprocess title={content.process.title} steps={content.process.steps} lang="en" />
+    <section
+        class="cta-banner reveal"
+        style={`background-image:linear-gradient(100deg, rgba(23,32,43,.92) 15%, rgba(23,32,43,.68) 50%, rgba(23,32,43,.3) 100%), url(${content.cta.image})`}
+    >
+        <div><span class="kicker">{content.cta.kicker}</span><strong>{content.cta.title}</strong><p>{content.cta.text}</p></div>
+        <a href="/en/choose-quote" class="button button-primary">Request a quote <span>→</span></a>
+    </section>
+    <Contact
+        client:visible
+        title={content.contact.title}
+        contactInfo={content.contact.info}
+        labels={content.contact.labels}
+        lang="en"
+    />
+</BaseLayout>

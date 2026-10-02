@@ -1,0 +1,91 @@
+---
+const { lang } = Astro.props;
+
+const content = {
+    sv: {
+        tagline: "Din lokala elpartner för trygga elinstallationer, laddboxar och värmepumpar i hela Storstockholm.",
+        quickTitle: "Snabblänkar",
+        quickLinks: [
+            { label: "Om oss", href: "/sv/#om-oss" },
+            { label: "Tjänster", href: "/sv/#tjanster" },
+            { label: "Referensjobb", href: "/sv/#referenser" },
+            { label: "Aktuellt", href: "/sv/aktuellt/" },
+            { label: "Process", href: "/sv/#process" },
+            { label: "Kontakt", href: "/sv/#kontakt" },
+        ],
+        servicesTitle: "Våra tjänster",
+        services: ["Elinstallationer", "Laddbox för elbil", "Byte av elcentral", "Service & felsökning"],
+        contactTitle: "Kontakt",
+        copyright: `© ${new Date().getFullYear()} Din Elpartner Sverige AB. All rights reserved.`,
+        privacy: "Integritetspolicy",
+        privacyHref: "/sv/integritetspolicy",
+        address: "Alängsvägen 16, 123 52 Farsta",
+    },
+    en: {
+        tagline: "Your local electrical partner for safe installations, EV chargers and heat pumps across greater Stockholm.",
+        quickTitle: "Quick links",
+        quickLinks: [
+            { label: "About", href: "/en/#om-oss" },
+            { label: "Services", href: "/en/#tjanster" },
+            { label: "References", href: "/en/#referenser" },
+            { label: "News", href: "/en/aktuellt/" },
+            { label: "Process", href: "/en/#process" },
+            { label: "Contact", href: "/en/#kontakt" },
+        ],
+        servicesTitle: "Our services",
+        services: ["Electrical installations", "EV charger", "Panel replacement", "Service & troubleshooting"],
+        contactTitle: "Contact",
+        copyright: `© ${new Date().getFullYear()} Din Elpartner Sverige AB. All rights reserved.`,
+        privacy: "Privacy Policy",
+        privacyHref: "/en/privacy-policy",
+        address: "Alängsvägen 16, 123 52 Farsta",
+    },
+};
+
+const t = content[lang] || content.sv;
+---
+
+<footer class="site-footer">
+    <div class="container mx-auto px-5 md:px-8">
+        <div class="footer-top">
+            <div>
+                <div class="footer-brand-logo">
+                    <img src="/logo.png" alt="Din Elpartner" class="h-10 w-10 object-contain" />
+                    <span>DIN<b>ELPARTNER</b></span>
+                </div>
+                <p class="tagline">{t.tagline}</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>{t.quickTitle}</h4>
+                <ul>
+                    {t.quickLinks.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>{t.servicesTitle}</h4>
+                <ul>
+                    {t.services.map((s) => <li><a href={`/${lang === "en" ? "en" : "sv"}/#tjanster`}>{s}</a></li>)}
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>{t.contactTitle}</h4>
+                <ul>
+                    <li class="contact-line"><span>📞</span> <a href="tel:+46700235436">070-023 54 36</a></li>
+                    <li class="contact-line"><span>✉️</span> <a href="mailto:info@dinelpartner.se">info@dinelpartner.se</a></li>
+                    <li class="contact-line"><span>📍</span> {t.address}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>{t.copyright}</span>
+            <div class="flex items-center gap-6">
+                <a href={t.privacyHref}>{t.privacy}</a>
+                <span class="opacity-60">{t.address}</span>
+            </div>
+        </div>
+    </div>
+</footer>

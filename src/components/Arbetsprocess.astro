@@ -1,0 +1,49 @@
+---
+// Full-bleed dark "Arbetsprocess" section with 4 numbered steps and an
+// animated connecting line (IntersectionObserver, reduced-motion safe).
+interface ProcessStep { number: string; title: string; description: string; }
+interface Props { title: string; steps: ProcessStep[]; lang?: "sv" | "en"; }
+const { title, steps, lang = "sv" } = Astro.props;
+const kicker = lang === "en" ? "OUR PROCESS" : "VÅR PROCESS";
+---
+
+<section id="process" class="process-section">
+    <div class="container mx-auto px-5 md:px-8">
+        <div class="section-heading-row reveal" style="margin-bottom:0;">
+            <div><div class="section-kicker"><span></span>{kicker}</div><h2>{title}</h2></div>
+        </div>
+        <div class="process-steps" data-process-steps>
+            <div class="process-line" aria-hidden="true"><div class="process-line-fill" data-process-line></div></div>
+            {steps.map((step) => (
+                <div class="process-step">
+                    <div class="process-number">{step.number}</div>
+                    <h3>{step.title}</h3>
+                    <p>{step.description}</p>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
+
+<script>
+    const section = document.querySelector('#process');
+    if (section && 'IntersectionObserver' in window) {
+        const line = section.querySelector('[data-process-line]');
+        const steps = section.querySelectorAll('.process-step');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    line?.classList.add('is-visible');
+                    steps.forEach((el, i) => {
+                        setTimeout(() => el.classList.add('is-visible'), i * 140);
+                    });
+                    observer.disconnect();
+                }
+            });
+        }, { threshold: 0.3 });
+        observer.observe(section);
+    } else {
+        section?.querySelector('[data-process-line]')?.classList.add('is-visible');
+        section?.querySelectorAll('.process-step').forEach((el) => el.classList.add('is-visible'));
+    }
+</script>

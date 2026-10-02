@@ -1,0 +1,55 @@
+---
+export const prerender = true;
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const PHOTOS = "/zdjecia%20na%20strone";
+
+const options = [
+    {
+        href: "/en/quote",
+        image: `${PHOTOS}/de98d52b-a8ae-48a7-9a66-0617c895dc51.jpeg`,
+        title: "Electrical installation",
+        text: "New installations, renovations, electrical panel replacement, EV chargers or general electrical service.",
+        cta: "Get an electrical quote",
+    },
+    {
+        href: "/en/ac-quote",
+        image: `${PHOTOS}/d1c0dbd9-3d43-4ef8-9e45-14c41276367b.jpeg`,
+        title: "Heat pump & AC",
+        text: "Installation, service or repair of air-to-air and air-to-water heat pumps.",
+        cta: "Get a heat pump / AC quote",
+    },
+];
+---
+
+<BaseLayout
+    title="Choose quote type – Din Elpartner"
+    description="Choose whether you need a quote for an electrical installation or a heat pump / AC, and we'll take you to the right form."
+    lang="en"
+    hideCTA={true}
+>
+    <section class="offert-picker">
+        <div class="container mx-auto px-5 md:px-8">
+            <div class="section-kicker"><span></span>QUOTE</div>
+            <h1 class="offert-picker-title">What do you need help with?</h1>
+            <p class="offert-picker-subtitle">
+                Pick a category below and we'll take you straight to the right form – we'll get back to you with a free quote.
+            </p>
+
+            <div class="offert-picker-grid">
+                {options.map((option) => (
+                    <a href={option.href} class="offert-picker-card">
+                        <div class="offert-picker-image">
+                            <img src={option.image} alt="" loading="eager" />
+                        </div>
+                        <div class="offert-picker-body">
+                            <h2>{option.title}</h2>
+                            <p>{option.text}</p>
+                            <span class="offert-picker-link">{option.cta} <span>→</span></span>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </section>
+</BaseLayout>

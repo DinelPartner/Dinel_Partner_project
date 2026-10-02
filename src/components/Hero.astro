@@ -1,0 +1,124 @@
+---
+interface HeroImage {
+    src: string;
+    alt: string;
+}
+
+interface Props {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    ctaPrimary: string;
+    ctaPrimaryHref?: string;
+    ctaSecondary: string;
+    usps: string[];
+    images: HeroImage[];
+}
+
+const { eyebrow, title, subtitle, ctaPrimary, ctaPrimaryHref = "/valj-offert", ctaSecondary, usps, images } = Astro.props;
+---
+
+<section id="hero" class="hero-section">
+    <div class="hero-image-full hero-carousel" data-hero-carousel>
+        {images.map((img, i) => (
+            <img
+                src={img.src}
+                alt={img.alt}
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchpriority={i === 0 ? "high" : "low"}
+                class:list={["hero-carousel-slide", { "is-active": i === 0 }]}
+            />
+        ))}
+        {images.length > 1 && (
+            <div class="hero-carousel-dots" role="tablist" aria-label="Bildspel">
+                {images.map((_, i) => (
+                    <button
+                        type="button"
+                        class:list={["hero-carousel-dot", { "is-active": i === 0 }]}
+                        role="tab"
+                        aria-label={`Visa bild ${i + 1}`}
+                        aria-selected={i === 0}
+                        data-hero-dot={i}
+                    ></button>
+                ))}
+            </div>
+        )}
+    </div>
+
+    <div class="container mx-auto px-5 md:px-8">
+        <div class="hero-copy reveal">
+            <div class="section-kicker"><span></span>{eyebrow}</div>
+
+            <h1 class="hero-title">{title}</h1>
+
+            <p class="hero-subtitle">{subtitle}</p>
+
+            <div class="flex flex-wrap gap-3">
+                <a href={ctaPrimaryHref} class="button button-primary">{ctaPrimary} <span>→</span></a>
+                <a href="#tjanster" class="button button-secondary">{ctaSecondary}</a>
+            </div>
+
+            <div class="hero-usp-list">
+                {usps.map((usp) => (
+                    <div class="hero-usp">
+                        <span class="usp-icon" aria-hidden="true">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        </span>
+                        <span>{usp}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Simple crossfade carousel for the hero image, auto-advancing with manual
+    // dot controls. No external library — a handful of DOM nodes and one interval.
+    function initHeroCarousels() {
+        document.querySelectorAll<HTMLElement>("[data-hero-carousel]").forEach((root) => {
+            const slides = Array.from(root.querySelectorAll<HTMLImageElement>(".hero-carousel-slide"));
+            const dots = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-hero-dot]"));
+            if (slides.length < 2) return;
+
+            let index = 0;
+            let timer: ReturnType<typeof setInterval> | null = null;
+            const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+            function show(next: number) {
+                slides[index]?.classList.remove("is-active");
+                dots[index]?.classList.remove("is-active");
+                dots[index]?.setAttribute("aria-selected", "false");
+                index = (next + slides.length) % slides.length;
+                slides[index]?.classList.add("is-active");
+                dots[index]?.classList.add("is-active");
+                dots[index]?.setAttribute("aria-selected", "true");
+            }
+
+            function startAuto() {
+                if (prefersReducedMotion) return;
+                stopAuto();
+                timer = setInterval(() => show(index + 1), 5500);
+            }
+            function stopAuto() {
+                if (timer) clearInterval(timer);
+                timer = null;
+            }
+
+            dots.forEach((dot, i) => {
+                dot.addEventListener("click", () => {
+                    show(i);
+                    startAuto();
+                });
+            });
+
+            startAuto();
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initHeroCarousels);
+    } else {
+        initHeroCarousels();
+    }
+</script>

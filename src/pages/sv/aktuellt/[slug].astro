@@ -1,0 +1,42 @@
+---
+export const prerender = true;
+
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+    const posts = await getCollection("blog", (entry) => entry.id.startsWith("sv/") && entry.data.published);
+    return posts.map((post) => ({
+        params: { slug: post.id.split("/").slice(1).join("/").replace(/\.md$/, "") },
+        props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const formatDate = (date: Date) =>
+    new Intl.DateTimeFormat("sv-SE", { year: "numeric", month: "long", day: "numeric" }).format(date);
+---
+
+<BaseLayout
+    title={`${post.data.title} – Din Elpartner`}
+    description={post.data.excerpt}
+    lang="sv"
+>
+    <article class="news-article">
+        <div class="container">
+            <a class="section-link" href="/sv/aktuellt/">← Alla aktualiteter</a>
+            <div class="article-meta">
+                <span>{post.data.category}</span>
+                <time>{formatDate(post.data.date)}</time>
+            </div>
+            <h1>{post.data.title}</h1>
+            {post.data.image && <img src={post.data.image} alt={post.data.title} />}
+            <p class="article-lead">{post.data.excerpt}</p>
+            <div class="article-body">
+                <Content />
+            </div>
+        </div>
+    </article>
+</BaseLayout>

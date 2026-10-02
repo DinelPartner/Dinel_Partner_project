@@ -1,0 +1,36 @@
+---
+export const prerender = true;
+import BaseLayout from "../layouts/BaseLayout.astro";
+import OffertForm from "../components/OffertForm.jsx";
+
+const heroImage = "/hero-bg.png"; // Using existing asset
+---
+
+<BaseLayout
+  title="Få en snabb offert – Din Elpartner"
+  description="Fyll i formuläret så kontaktar vi dig med en snabb och trygg offert för dina elinstallationer."
+  lang="sv"
+  simpleHeader={true}
+  hideCTA={true}
+>
+  <div class="min-h-screen flex flex-col lg:flex-row">
+    {/* Left Column - Hero Image */}
+    <div class="hidden lg:block lg:w-[40%] relative">
+      <div class="sticky top-0 h-screen w-full">
+         <img
+          src={heroImage}
+          alt=""
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-gray-900/20"></div>
+      </div>
+    </div>
+
+    {/* Right Column - Form */}
+    <div class="w-full lg:w-[60%] bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-12 xl:px-24 min-h-screen">
+       <div class="max-w-2xl mx-auto w-full">
+          <OffertForm client:load />
+       </div>
+    </div>
+  </div>
+</BaseLayout>

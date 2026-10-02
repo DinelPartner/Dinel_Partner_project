@@ -1,0 +1,173 @@
+---
+export const prerender = true;
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Hero from "../../components/Hero.astro";
+import About from "../../components/About.astro";
+import Services from "../../components/Services.astro";
+import Process from "../../components/Process.astro";
+import Arbetsprocess from "../../components/Arbetsprocess.astro";
+import Contact from "../../components/Contact.jsx";
+import NewsSection from "../../components/NewsSection.astro";
+
+const PHOTOS = "/zdjecia%20na%20strone";
+const HERO_PHOTOS = "/zdjecia_hero";
+const SERVICE_PHOTOS = "/zdjecia_2_sekcja";
+
+const content = {
+    hero: {
+        eyebrow: "Din lokala elektriker i Stockholm",
+        title: "Trygga elinstallationer för hem, företag & BRF",
+        subtitle:
+            "Från mindre elarbeten till kompletta installationer – vi hjälper dig med moderna, säkra och energieffektiva lösningar. Snabb återkoppling, professionellt utförande och en elektriker du kan lita på.",
+        ctaPrimary: "Begär offert",
+        ctaPrimaryHref: "/valj-offert",
+        ctaSecondary: "Våra tjänster",
+        usps: ["Trygga installationer", "Hög kvalitet", "Erfarna elektriker och personlig service"],
+        images: [
+            { src: `${HERO_PHOTOS}/att.2jxTUev92Z-7DB6c7AKDRiM0tyrDwV6wKoIwu2JEJsQ.JPG`, alt: "Elektriker installerar laddbox utomhus" },
+            { src: `${HERO_PHOTOS}/att.WVlwlVTL30SS7jUPocEGf3uh-EGNgJrOJgP0uK0fhtk.JPG`, alt: "Nyinstallerad luft-luftvärmepump på fasad" },
+            { src: `${HERO_PHOTOS}/att.cseothlXYtyuzHPs4_YS2i6ZzFn19C7Z-Qiy1vl5tps.JPG`, alt: "Modern villa med nybyggd uteplats" },
+            { src: `${HERO_PHOTOS}/att.jsijWmOtu6cM6m3kHrD4jSUNHrMkxFouI7fJqQ8lkJE.JPG`, alt: "Elinstallation i tak under pågående byggnation" },
+            { src: `${HERO_PHOTOS}/att.wcCqvbp6pbTZypn7uMqcH1-rN1QIXHD_42PmuDlIPpU.JPG`, alt: "Färdig belysningsinstallation i matplats" },
+        ],
+    },
+    services: {
+        title: "Våra tjänster",
+        subtitle:
+            "Vi levererar kompletta lösningar för både privatpersoner och företag.",
+        items: [
+            {
+                title: "Laddbox för elbil",
+                description:
+                    "Installation av laddboxar för villa, företag och bostadsrättsföreningar. Redo för framtiden.",
+                image: `${SERVICE_PHOTOS}/laddbox-el-bil.jpeg`,
+            },
+            {
+                title: "Byte av elcentral",
+                description:
+                    "Installation och byte av elcentraler. Modern, säker och framtidssäkrad elanläggning.",
+                image: `${SERVICE_PHOTOS}/byte-av-elcentral.jpeg`,
+            },
+            {
+                title: "Elinstallationer",
+                description:
+                    "Allt från nyinstallationer till ombyggnationer. Säkra och moderna elanläggningar.",
+                image: `${SERVICE_PHOTOS}/el-installation.jpeg`,
+            },
+            {
+                title: "Service & felsökning",
+                description:
+                    "Snabb hjälp vid problem och löpande service för en trygg och säker drift.",
+                image: `${SERVICE_PHOTOS}/felsokning.jpeg`,
+            },
+            {
+                title: "Luftvärmepump med installation",
+                description:
+                    "Installation av luft-luftvärmepump för effektiv och behaglig uppvärmning året runt.",
+                image: `${SERVICE_PHOTOS}/luftvarmepump-med-installation.jpeg`,
+            },
+        ],
+    },
+    reference: {
+        title: "Utvalda projekt",
+        items: [
+            {
+                title: "Värmepumpsmontage",
+                description: "Installation av luft-luft värmepump med precision och kvalitet.",
+                image: `${PHOTOS}/d1c0dbd9-3d43-4ef8-9e45-14c41276367b.jpeg`,
+            },
+            {
+                title: "Värmepumpsinstallation",
+                description: "Professionellt utfört montage och driftsättning av värmepump.",
+                image: `${PHOTOS}/752dc9dd-e0e4-4384-b013-b96d5f668d64.jpeg`,
+            },
+            {
+                title: "Byte av elcentral",
+                description: "Modern elcentral för ökad säkerhet och kapacitet.",
+                image: `${PHOTOS}/02d60a24-f2da-49a3-b1eb-55f7643b584b.jpeg`,
+            },
+            {
+                title: "Företagsinstallation",
+                description: "Elinstallation för företag med flera platser och hög driftsäkerhet.",
+                image: `${PHOTOS}/d4520a4b-953f-4332-8da9-8e1dfc1596ce.jpeg`,
+            },
+        ],
+    },
+    process: {
+        title: "Arbetsprocess",
+        steps: [
+            { number: "01", title: "Kontakt", description: "Skicka en förfrågan via formuläret eller ring oss direkt för en första dialog." },
+            { number: "02", title: "Rådgivning", description: "Vi går igenom dina behov och förutsättningar för att hitta bästa lösningen." },
+            { number: "03", title: "Installation", description: "Arbetet utförs av våra behöriga elektriker enligt gällande branschregler." },
+            { number: "04", title: "Klart!", description: "Genomgång av installationen, funktionskontroll och överlämning av dokumentation." },
+        ],
+    },
+    about: {
+        title: "En trygg partner genom hela projektet",
+        content:
+            "Säkerhet och kvalitet är grunden i allt vi gör. Med behörig installatör och gedigen yrkeskunskap säkerställer vi elinstallationer som inte bara fungerar idag, utan är anpassade för framtidens krav.",
+    },
+    cta: {
+        kicker: "RÅDGIVNING · OFFERT · INSTALLATION · SERVICE",
+        title: "Behöver du hjälp med el eller värmepump?",
+        text: "Kontakta oss för en kostnadsfri offert – vi hjälper dig från idé till färdig installation.",
+        image: `${PHOTOS}/65dba9e2-19e9-46d7-9a7a-50ab853c9f1b.jpeg`,
+    },
+    contact: {
+        title: "Kontakta oss",
+        info: {
+            name: "Peter Palka",
+            email: "info@dinelpartner.se",
+            phone: "+46 70 023 54 36",
+        },
+        labels: {
+            contactPerson: "Projektledare",
+            name: "Namn",
+            email: "E-post",
+            phone: "Telefonnummer",
+            message: "Berätta vad du behöver hjälp med...",
+            consent:
+                "Jag godkänner att mina uppgifter sparas enligt integritetspolicyn.",
+            submit: "Skicka förfrågan",
+            loading: "Skickar...",
+            successTitle: "Tack för din förfrågan!",
+            successMessage:
+                "Vi har mottagit ditt meddelande och återkommer så snart som möjligt.",
+            sendAnother: "Skicka ett nytt meddelande",
+            optional: "Valfritt",
+        },
+    },
+};
+---
+
+<BaseLayout
+    title="Din Elpartner – Elektriker Stockholm & Laddboxar"
+    description={content.hero.subtitle}
+    lang="sv"
+>
+    <Hero {...content.hero} />
+    <Services
+        title={content.services.title}
+        subtitle={content.services.subtitle}
+        items={content.services.items}
+        lang="sv"
+    />
+    <Process title={content.reference.title} steps={content.reference.items} lang="sv" />
+    <NewsSection lang="sv" limit={3} />
+    <About title={content.about.title} content={content.about.content} lang="sv" />
+    <Arbetsprocess title={content.process.title} steps={content.process.steps} lang="sv" />
+    <section
+        class="cta-banner reveal"
+        style={`background-image:linear-gradient(100deg, rgba(23,32,43,.92) 15%, rgba(23,32,43,.68) 50%, rgba(23,32,43,.3) 100%), url(${content.cta.image})`}
+    >
+        <div><span class="kicker">{content.cta.kicker}</span><strong>{content.cta.title}</strong><p>{content.cta.text}</p></div>
+        <a href="/valj-offert" class="button button-primary">Begär offert <span>→</span></a>
+    </section>
+    <Contact
+        client:visible
+        title={content.contact.title}
+        contactInfo={content.contact.info}
+        labels={content.contact.labels}
+        lang="sv"
+    />
+</BaseLayout>

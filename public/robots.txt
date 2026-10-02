@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dinelpartner.se/sitemap-index.xml

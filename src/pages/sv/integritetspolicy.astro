@@ -1,0 +1,124 @@
+---
+export const prerender = true;
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const updated = "28 september 2026";
+---
+
+<BaseLayout
+    title="Integritetspolicy - Din Elpartner"
+    description="Läs hur Din Elpartner Sverige AB samlar in och hanterar personuppgifter."
+    lang="sv"
+>
+    <section class="py-32 bg-white min-h-[60vh]">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <h1 class="text-4xl font-bold text-gray-900 mb-3">Integritetspolicy</h1>
+            <p class="text-sm text-gray-500 mb-10">Senast uppdaterad: {updated}</p>
+
+            <div class="space-y-8 text-gray-700 leading-relaxed">
+                <p>
+                    Din Elpartner Sverige AB ("vi", "oss") värnar om din integritet. Den här
+                    policyn förklarar vilka personuppgifter vi samlar in när du besöker vår
+                    webbplats eller använder våra kontakt- och offertformulär, varför vi
+                    samlar in dem, och vilka rättigheter du har enligt GDPR.
+                </p>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Vilka uppgifter vi samlar in</h2>
+                    <p>
+                        När du fyller i vårt kontaktformulär eller något av våra offertformulär
+                        (t.ex. för el- eller klimatinstallation) samlar vi in de uppgifter du
+                        själv anger, vanligtvis:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-1">
+                        <li>Namn</li>
+                        <li>E-postadress</li>
+                        <li>Telefonnummer</li>
+                        <li>Ort/stadsdel och meddelande/beskrivning av ditt ärende</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Varför vi samlar in uppgifterna</h2>
+                    <p>
+                        Uppgifterna används uteslutande för att kunna besvara din förfrågan,
+                        ta fram och skicka en offert, samt för att kunna kontakta dig gällande
+                        ett pågående eller kommande uppdrag. Den rättsliga grunden är
+                        berättigat intresse (att kunna hantera din förfrågan) samt, i
+                        förekommande fall, ditt uttryckliga samtycke som du lämnar i
+                        formuläret innan du skickar in det.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Google Maps och Google reCAPTCHA</h2>
+                    <p>
+                        På vår webbplats använder vi två tjänster från Google:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-1">
+                        <li>
+                            <strong>Google Maps</strong> för att visa en karta med vår plats i
+                            kontaktsektionen. Kartan laddas som en inbäddad ram (iframe)
+                            direkt från Google.
+                        </li>
+                        <li>
+                            <strong>Google reCAPTCHA</strong> för att skydda våra formulär mot
+                            spam och automatiserade inskick.
+                        </li>
+                    </ul>
+                    <p class="mt-2">
+                        Båda tjänsterna kan läsa in innehåll, skript och cookies från Google
+                        när du besöker sidan, oavsett om du använder formulären eller inte.
+                        Google kan i samband med detta behandla uppgifter, t.ex. din
+                        IP-adress. Vi rekommenderar att du läser
+                        {" "}
+                        <a
+                            href="https://policies.google.com/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-accent-hover underline hover:text-gray-900"
+                        >Googles egen integritetspolicy</a>
+                        {" "}för mer information om hur Google hanterar dessa uppgifter.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Hur länge vi sparar dina uppgifter</h2>
+                    <p>
+                        Vi sparar uppgifterna så länge det behövs för att hantera din
+                        förfrågan och eventuellt uppdrag, och därefter enligt gällande
+                        bokförings- och garantiregler när det är tillämpligt. Vi säljer
+                        aldrig dina uppgifter vidare till tredje part.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Dina rättigheter</h2>
+                    <p>
+                        Du har enligt GDPR rätt att begära utdrag av, rättelse av eller
+                        radering av dina personuppgifter hos oss, samt att invända mot vår
+                        behandling. Kontakta oss enligt uppgifterna nedan för att utöva dina
+                        rättigheter.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Kontakt</h2>
+                    <p>
+                        Personuppgiftsansvarig är Din Elpartner Sverige AB, genom Peter
+                        Palka. Vid frågor om denna policy eller om du vill utöva dina
+                        rättigheter, kontakta oss på:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-1">
+                        <li>E-post: <a href="mailto:info@dinelpartner.se" class="text-accent-hover underline hover:text-gray-900">info@dinelpartner.se</a></li>
+                        <li>Telefon: <a href="tel:+46700235436" class="text-accent-hover underline hover:text-gray-900">+46 70 023 54 36</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <a href="/sv/" class="inline-block mt-12 text-accent-hover hover:underline font-semibold"
+                >← Tillbaka till startsidan</a
+            >
+        </div>
+    </section>
+</BaseLayout>

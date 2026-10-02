@@ -1,0 +1,123 @@
+---
+export const prerender = true;
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const updated = "September 28, 2026";
+---
+
+<BaseLayout
+    title="Privacy Policy - Din Elpartner"
+    description="Learn how Din Elpartner Sverige AB collects and handles personal data."
+    lang="en"
+>
+    <section class="py-32 bg-white min-h-[60vh]">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <h1 class="text-4xl font-bold text-gray-900 mb-3">Privacy Policy</h1>
+            <p class="text-sm text-gray-500 mb-10">Last updated: {updated}</p>
+
+            <div class="space-y-8 text-gray-700 leading-relaxed">
+                <p>
+                    Din Elpartner Sverige AB ("we", "us") values your privacy. This policy
+                    explains what personal data we collect when you visit our website or
+                    use our contact and quote forms, why we collect it, and what rights
+                    you have under the GDPR.
+                </p>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">What data we collect</h2>
+                    <p>
+                        When you fill in our contact form or one of our quote forms (e.g.
+                        for an electrical or air-conditioning installation), we collect the
+                        information you provide yourself, typically:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-1">
+                        <li>Name</li>
+                        <li>Email address</li>
+                        <li>Phone number</li>
+                        <li>City/district and a message describing your request</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Why we collect it</h2>
+                    <p>
+                        The data is used exclusively to respond to your enquiry, prepare
+                        and send a quote, and to contact you regarding an ongoing or
+                        upcoming job. The legal basis is legitimate interest (handling your
+                        enquiry) and, where applicable, the explicit consent you give in
+                        the form before submitting it.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Google Maps and Google reCAPTCHA</h2>
+                    <p>
+                        Our website uses two services from Google:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-1">
+                        <li>
+                            <strong>Google Maps</strong>, to show a map of our location in
+                            the contact section. The map is loaded as an embedded frame
+                            (iframe) directly from Google.
+                        </li>
+                        <li>
+                            <strong>Google reCAPTCHA</strong>, to protect our forms against
+                            spam and automated submissions.
+                        </li>
+                    </ul>
+                    <p class="mt-2">
+                        Both services may load content, scripts and cookies from Google
+                        when you view the page, whether or not you use the forms. Google
+                        may process data in connection with this, such as your IP address.
+                        We recommend reading
+                        {" "}
+                        <a
+                            href="https://policies.google.com/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-accent-hover underline hover:text-gray-900"
+                        >Google's own privacy policy</a>
+                        {" "}for more information on how Google handles this data.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">How long we keep your data</h2>
+                    <p>
+                        We keep your data for as long as needed to handle your enquiry and
+                        any resulting job, and thereafter in line with applicable
+                        accounting and warranty rules where relevant. We never sell your
+                        data to third parties.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Your rights</h2>
+                    <p>
+                        Under the GDPR you have the right to request access to, correction
+                        of, or deletion of your personal data held by us, and to object to
+                        our processing of it. Contact us using the details below to
+                        exercise your rights.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Contact</h2>
+                    <p>
+                        The data controller is Din Elpartner Sverige AB, represented by
+                        Peter Palka. For questions about this policy, or to exercise your
+                        rights, contact us at:
+                    </p>
+                    <ul class="list-disc pl-6 mt-2 space-y-1">
+                        <li>Email: <a href="mailto:info@dinelpartner.se" class="text-accent-hover underline hover:text-gray-900">info@dinelpartner.se</a></li>
+                        <li>Phone: <a href="tel:+46700235436" class="text-accent-hover underline hover:text-gray-900">+46 70 023 54 36</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <a href="/en/" class="inline-block mt-12 text-accent-hover hover:underline font-semibold"
+                >← Back to Home</a
+            >
+        </div>
+    </section>
+</BaseLayout>

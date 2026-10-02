@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.vercel/
+.astro/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+*.log
+
+# Old deployment artifacts (one.com era zips, no longer relevant on Vercel)
+*.zip

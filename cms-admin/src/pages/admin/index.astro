@@ -24,11 +24,18 @@ if (!requireAuth(Astro.request)) {
       </nav>
     </div>
     <div class="wrap">
-      <h1>Alla inlägg</h1>
-      <div class="card">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">DIN ELPARTNER CMS</p>
+          <h1>Alla inlägg</h1>
+          <p class="page-intro">Hantera publicerade artiklar och utkast från ett ställe.</p>
+        </div>
+        <a class="btn" href="/admin/edit">+ Nytt inlägg</a>
+      </div>
+      <div class="card card-list">
         <div id="list-loading">Laddar…</div>
         <div id="list-error" class="error-text" hidden></div>
-        <div id="post-list"></div>
+        <div id="post-list" class="post-grid"></div>
       </div>
 
       <h2>Bezpieczeństwo</h2>
@@ -61,6 +68,12 @@ if (!requireAuth(Astro.request)) {
         return String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
       }
 
+      function resolveImageUrl(path) {
+        if (!path) return '';
+        if (/^https?:\/\//i.test(path)) return path;
+        return `https://www.dinelpartner.se${path.startsWith('/') ? '' : '/'}${path}`;
+      }
+
       async function loadPosts() {
         loadingEl.hidden = false;
         errorEl.hidden = true;
@@ -75,22 +88,28 @@ if (!requireAuth(Astro.request)) {
           const posts = await res.json();
           loadingEl.hidden = true;
           if (posts.length === 0) {
-            listEl.innerHTML = '<p>Inga inlägg ännu.</p>';
+            listEl.innerHTML = '<p class="empty-state">Inga inlägg ännu. Skapa ditt första inlägg.</p>';
             return;
           }
           for (const post of posts) {
             const row = document.createElement('div');
-            row.className = 'post-row';
+            row.className = 'post-card';
             const title = post.sv ? post.sv.title : post.en ? post.en.title : post.slug;
+            const category = post.sv ? post.sv.category : post.en ? post.en.category : 'Artikel';
+            const excerpt = post.sv ? post.sv.excerpt : post.en ? post.en.excerpt : '';
             row.innerHTML = `
-              <div>
+              <div class="post-card-image">
+                <img src="${escapeHtml(resolveImageUrl(post.image))}" alt="" loading="lazy" onerror="this.parentElement.classList.add('image-missing'); this.remove()" />
                 <span class="badge ${post.published ? 'published' : 'draft'}">${post.published ? 'Publicerad' : 'Utkast'}</span>
-                <strong style="margin-left:.5rem;">${escapeHtml(title)}</strong>
-                <div style="font-size:.8rem; color:#697580;">${escapeHtml(post.slug)} · ${escapeHtml(post.date)}</div>
               </div>
-              <div class="post-actions">
-                <a class="btn btn-secondary" href="/admin/edit?slug=${encodeURIComponent(post.slug)}">Redigera</a>
-                <button class="btn-danger" data-slug="${escapeHtml(post.slug)}" data-title="${escapeHtml(title)}">Ta bort</button>
+              <div class="post-card-body">
+                <div class="post-card-meta"><span>${escapeHtml(category)}</span><time>${escapeHtml(post.date)}</time></div>
+                <h2>${escapeHtml(title)}</h2>
+                <p>${escapeHtml(excerpt)}</p>
+                <div class="post-actions">
+                  <a class="btn btn-secondary" href="/admin/edit?slug=${encodeURIComponent(post.slug)}">Redigera</a>
+                  <button class="btn-danger" data-slug="${escapeHtml(post.slug)}" data-title="${escapeHtml(title)}">Ta bort</button>
+                </div>
               </div>
             `;
             listEl.appendChild(row);

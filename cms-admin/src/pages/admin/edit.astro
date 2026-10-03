@@ -23,8 +23,16 @@ if (!requireAuth(Astro.request)) {
       </nav>
     </div>
     <div class="wrap">
-      <h1 id="page-title">Nytt inlägg</h1>
-      <form id="post-form" class="card">
+      <div class="page-heading editor-heading">
+        <div>
+          <p class="eyebrow">DIN ELPARTNER CMS</p>
+          <h1 id="page-title">Nytt inlägg</h1>
+          <p class="page-intro">Fyll i innehållet och se direkt hur artikeln kommer att se ut.</p>
+        </div>
+        <a class="btn btn-secondary" href="/admin/">← Alla inlägg</a>
+      </div>
+      <div class="editor-layout">
+      <form id="post-form" class="card editor-form">
         <div class="field">
           <label for="slug">Slug (del av URL:en, t.ex. "sa-valjer-du-ratt-laddbox")</label>
           <input type="text" id="slug" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" />
@@ -98,6 +106,32 @@ if (!requireAuth(Astro.request)) {
         <span id="save-status" style="margin-left:.75rem; font-size:.85rem;"></span>
         <p class="error-text" id="form-error" hidden></p>
       </form>
+      <aside class="preview-panel">
+        <div class="preview-toolbar">
+          <div>
+            <p class="eyebrow">LIVE PREVIEW</p>
+            <h2>Podgląd artykułu</h2>
+          </div>
+          <div class="preview-tabs" role="tablist" aria-label="Język podglądu">
+            <button type="button" class="preview-tab active" data-preview-lang="sv">SV</button>
+            <button type="button" class="preview-tab" data-preview-lang="en">EN</button>
+          </div>
+        </div>
+        <div class="preview-browser-note">Tak artykuł będzie wyglądał na stronie</div>
+        <article class="article-preview">
+          <div class="article-preview-image image-missing" id="preview-image-wrap">
+            <img id="preview-image" alt="" />
+            <span>Dodaj zdjęcie artykułu</span>
+          </div>
+          <div class="article-preview-body">
+            <div class="article-preview-meta"><span id="preview-category">Kategoria</span><time id="preview-date">—</time></div>
+            <h2 id="preview-title">Tytuł artykułu</h2>
+            <p class="article-preview-excerpt" id="preview-excerpt">Tutaj pojawi się krótki opis artykułu.</p>
+            <div class="article-preview-content" id="preview-content"><p>Treść artykułu pojawi się tutaj podczas pisania.</p></div>
+          </div>
+        </article>
+      </aside>
+      </div>
     </div>
 
     <script>
@@ -113,12 +147,86 @@ if (!requireAuth(Astro.request)) {
       const uploadInput = document.getElementById('image-upload');
       const uploadStatus = document.getElementById('upload-status');
       const imageInput = document.getElementById('image');
+      const previewImageWrap = document.getElementById('preview-image-wrap');
+      const previewImage = document.getElementById('preview-image');
+      const previewTitle = document.getElementById('preview-title');
+      const previewCategory = document.getElementById('preview-category');
+      const previewDate = document.getElementById('preview-date');
+      const previewExcerpt = document.getElementById('preview-excerpt');
+      const previewContent = document.getElementById('preview-content');
+      let previewLang = 'sv';
 
       if (isEditMode) {
         document.getElementById('page-title').textContent = 'Redigera inlägg';
         slugInput.readOnly = true; // renaming a slug = delete + create, not supported inline
         slugInput.title = 'Slug kan inte ändras efter att inlägget skapats.';
       }
+
+      function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+
+      function resolveImageUrl(path) {
+        if (!path) return '';
+        if (/^https?:\/\//i.test(path)) return path;
+        return `https://www.dinelpartner.se${path.startsWith('/') ? '' : '/'}${path}`;
+      }
+
+      function markdownToHtml(markdown) {
+        const safe = escapeHtml(markdown).trim();
+        if (!safe) return '<p class="preview-muted">Treść artykułu pojawi się tutaj podczas pisania.</p>';
+        return safe
+          .split(/\n\s*\n/)
+          .map((block) => {
+            const trimmed = block.trim();
+            if (/^###\s+/.test(trimmed)) return `<h4>${trimmed.replace(/^###\s+/, '')}</h4>`;
+            if (/^##\s+/.test(trimmed)) return `<h3>${trimmed.replace(/^##\s+/, '')}</h3>`;
+            if (/^#\s+/.test(trimmed)) return `<h2>${trimmed.replace(/^#\s+/, '')}</h2>`;
+            if (/^[-*]\s+/.test(trimmed)) {
+              const items = trimmed.split('\n').map((line) => `<li>${line.replace(/^[-*]\s+/, '')}</li>`).join('');
+              return `<ul>${items}</ul>`;
+            }
+            return `<p>${trimmed.replace(/\n/g, '<br />')}</p>`;
+          })
+          .join('');
+      }
+
+      function updatePreview() {
+        const prefix = previewLang;
+        const title = document.getElementById(`${prefix}-title`).value.trim();
+        const category = document.getElementById(`${prefix}-category`).value.trim();
+        const excerpt = document.getElementById(`${prefix}-excerpt`).value.trim();
+        const content = document.getElementById(`${prefix}-content`).value;
+        const image = resolveImageUrl(imageInput.value.trim());
+        const date = document.getElementById('date').value;
+
+        previewTitle.textContent = title || 'Tytuł artykułu';
+        previewCategory.textContent = category || 'Kategoria';
+        previewDate.textContent = date || '—';
+        previewExcerpt.textContent = excerpt || 'Tutaj pojawi się krótki opis artykułu.';
+        previewContent.innerHTML = markdownToHtml(content);
+        previewImage.alt = title || '';
+        previewImageWrap.classList.toggle('image-missing', !image);
+        if (image) {
+          previewImage.src = image;
+        } else {
+          previewImage.removeAttribute('src');
+        }
+      }
+
+      previewImage.addEventListener('error', () => previewImageWrap.classList.add('image-missing'));
+      previewImage.addEventListener('load', () => previewImageWrap.classList.remove('image-missing'));
+      document.querySelectorAll('[data-preview-lang]').forEach((button) => {
+        button.addEventListener('click', () => {
+          previewLang = button.getAttribute('data-preview-lang') || 'sv';
+          document.querySelectorAll('[data-preview-lang]').forEach((tab) => tab.classList.toggle('active', tab === button));
+          updatePreview();
+        });
+      });
+      document.querySelectorAll('#post-form input, #post-form textarea, #post-form select').forEach((field) => {
+        field.addEventListener('input', updatePreview);
+        field.addEventListener('change', updatePreview);
+      });
 
       function setFieldValues(post) {
         slugInput.value = post.slug;
@@ -133,6 +241,7 @@ if (!requireAuth(Astro.request)) {
         document.getElementById('en-category').value = post.en.category;
         document.getElementById('en-excerpt').value = post.en.excerpt;
         document.getElementById('en-content').value = post.en.content;
+        updatePreview();
       }
 
       async function loadExisting() {
@@ -153,6 +262,7 @@ if (!requireAuth(Astro.request)) {
 
       if (isEditMode) loadExisting();
       else document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+      updatePreview();
 
       uploadInput.addEventListener('change', async () => {
         const file = uploadInput.files && uploadInput.files[0];
@@ -182,6 +292,7 @@ if (!requireAuth(Astro.request)) {
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || 'Uppladdning misslyckades');
           imageInput.value = data.path;
+          updatePreview();
           uploadStatus.textContent = `Uppladdad: ${data.path}`;
           uploadStatus.style.color = '#1e8449';
         } catch (err) {

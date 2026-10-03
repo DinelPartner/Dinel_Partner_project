@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { constantTimeStringEqual, createSessionCookieValue, sessionCookieHeader } from '../../lib/session';
+import { createSessionCookieValue, sessionCookieHeader } from '../../lib/session';
+import { verifyAdminPassword } from '../../lib/password';
 
 export const prerender = false;
 
@@ -11,15 +12,12 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'Invalid payload' }, 400);
   }
 
-  const expected = import.meta.env.ADMIN_PASSWORD;
-  if (!expected) {
+  if (!import.meta.env.ADMIN_PASSWORD) {
     return json({ error: 'Server misconfigured (ADMIN_PASSWORD not set)' }, 500);
   }
 
   const provided = String(body.password || '');
-  // Constant-time comparison so response timing can't be used to guess the
-  // password character-by-character.
-  if (!provided || !constantTimeStringEqual(provided, expected)) {
+  if (!provided || !(await verifyAdminPassword(provided))) {
     return json({ error: 'Incorrect password' }, 401);
   }
 

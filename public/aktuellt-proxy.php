@@ -13,11 +13,9 @@
  * Vercel API being reachable/fast at that exact moment — hence a local,
  * file-based cache on the one.com server itself, re-fetched only every 60s.
  *
- * PLACEHOLDER: fill in the real cms-admin Vercel deployment URL once the
- * client has deployed it (see repo root README / project report §12/§14).
  */
 
-define('CMS_API_BASE', 'https://PLACEHOLDER-cms-admin.vercel.app');
+define('CMS_API_BASE', 'https://dinel-partner-cms-admin.vercel.app');
 define('CMS_CACHE_TTL', 60); // seconds, mirrors the panel's own s-maxage=60
 
 /**

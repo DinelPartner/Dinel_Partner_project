@@ -30,6 +30,26 @@ if (!requireAuth(Astro.request)) {
         <div id="list-error" class="error-text" hidden></div>
         <div id="post-list"></div>
       </div>
+
+      <h2>Bezpieczeństwo</h2>
+      <form id="password-form" class="card">
+        <div class="field">
+          <label for="current-password">Obecne hasło</label>
+          <input type="password" id="current-password" required autocomplete="current-password" />
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="new-password">Nowe hasło</label>
+            <input type="password" id="new-password" required minlength="8" autocomplete="new-password" />
+          </div>
+          <div class="field">
+            <label for="confirm-password">Powtórz nowe hasło</label>
+            <input type="password" id="confirm-password" required minlength="8" autocomplete="new-password" />
+          </div>
+        </div>
+        <button class="btn" type="submit" id="password-btn">Zmień hasło</button>
+        <span id="password-status" style="margin-left:.75rem; font-size:.85rem;"></span>
+      </form>
     </div>
 
     <script>
@@ -112,6 +132,38 @@ if (!requireAuth(Astro.request)) {
       document.getElementById('logout-btn').addEventListener('click', async () => {
         await fetch('/api/logout', { method: 'POST', credentials: 'include' });
         window.location.href = '/';
+      });
+
+      document.getElementById('password-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const btn = document.getElementById('password-btn');
+        const status = document.getElementById('password-status');
+        btn.disabled = true;
+        status.textContent = 'Zapisywanie…';
+        status.className = '';
+
+        try {
+          const res = await fetch('/api/admin/password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              currentPassword: document.getElementById('current-password').value,
+              newPassword: document.getElementById('new-password').value,
+              confirmPassword: document.getElementById('confirm-password').value,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || 'Nie udało się zmienić hasła');
+          status.textContent = 'Hasło zmienione.';
+          status.className = 'success-text';
+          document.getElementById('password-form').reset();
+        } catch (error) {
+          status.textContent = error instanceof Error ? error.message : 'Nie udało się zmienić hasła';
+          status.className = 'error-text';
+        } finally {
+          btn.disabled = false;
+        }
       });
 
       loadPosts();
